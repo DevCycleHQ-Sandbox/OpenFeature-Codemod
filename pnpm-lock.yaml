@@ -6,6 +6,27 @@ settings:
 
 importers:
 
+  codemods/nodejs/devcycle-to-openfeature/initialization_transform:
+    devDependencies:
+      '@codemod.com/codemod-utils':
+        specifier: '*'
+        version: 1.0.0
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2
+      typescript:
+        specifier: ^5.2.2
+        version: 5.7.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.6.1(@types/node@20.9.0)
+
   codemods/nodejs/devcycle-to-openfeature/update-imports:
     devDependencies:
       '@codemod.com/codemod-utils':
