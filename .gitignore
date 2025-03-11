@@ -1,0 +1,6 @@
+sgconfig.yml
+rules/
+node_modules
+dist
+cdmd_dist
+tsconfig.tsbuildinfo
