@@ -6,7 +6,7 @@ settings:
 
 importers:
 
-  codemods/example-codemod:
+  codemods/nodejs/devcycle-to-openfeature/update-imports:
     devDependencies:
       '@codemod.com/codemod-utils':
         specifier: '*'
