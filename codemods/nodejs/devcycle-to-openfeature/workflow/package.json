@@ -1,0 +1,9 @@
+{
+  "name": "devcycle-to-openfeature-nodejs-workflow",
+  "license": "MIT",
+  "files": [
+    "README.md",
+    ".codemodrc.json"
+  ],
+  "type": "module"
+}

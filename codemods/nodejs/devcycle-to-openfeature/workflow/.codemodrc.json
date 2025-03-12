@@ -1,0 +1,18 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "devcycle-to-openfeature-nodejs-workflow",
+  "description": "DevCycle to OpenFeature Node.js Codemod Workflow",
+  "version": "1.0.1",
+  "private": false,
+  "engine": "recipe",
+  "names": [
+    "devcycle-to-openfeature-nodejs-update-imports",
+    "devcycle-to-openfeature-nodejs-initialization-transform",
+    "devcycle-to-openfeature-nodejs-user-context-transform",
+    "devcycle-to-openfeature-nodejs-variable-transform"
+  ],
+  "meta": {
+    "git": "https://github.com/DevCycleHQ-Sandbox/OpenFeature-Codemod/tree/main/codemods/nodejs/devcycle-to-openfeature/workflow",
+    "tags": ["devcycle", "openfeature", "nodejs"]
+  }
+}
