@@ -1,0 +1,23 @@
+{
+  "name": "devcycle-to-openfeature-nodejs-user-context-transform",
+  "license": "MIT",
+  "devDependencies": {
+    "@codemod.com/codemod-utils": "*",
+    "@types/jscodeshift": "^0.11.10",
+    "@types/node": "20.9.0",
+    "jscodeshift": "^0.15.1",
+    "typescript": "^5.2.2",
+    "vitest": "^1.0.1"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest watch"
+  },
+  "files": [
+    "README.md",
+    ".codemodrc.json",
+    "/dist/index.cjs"
+  ],
+  "type": "module",
+  "packageManager": "pnpm@10.6.2+sha512.47870716bea1572b53df34ad8647b42962bc790ce2bf4562ba0f643237d7302a3d6a8ecef9e4bdfc01d23af1969aa90485d4cebb0b9638fa5ef1daef656f6c1b"
+}
