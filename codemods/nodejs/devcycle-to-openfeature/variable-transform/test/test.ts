@@ -47,6 +47,13 @@ describe("update-imports", () => {
         .replace(/\s+}/g, "}") // Remove space before }
         .replace(/,\s+/g, ",") // Remove space after commas
         .replace(/,}/g, "}") // Remove trailing commas
+        .replace(/\(\s+/g, "(") // Remove space after opening parenthesis
+        .replace(/\s+\)/g, ")") // Remove space before closing parenthesis
+        .replace(/\s+;/g, ";") // Remove space before semicolon
+        .replace(/"\s+/g, '"') // Remove space after opening quote
+        .replace(/\s+"/g, '"') // Remove space before closing quote
+        .replace(/'\s+/g, "'") // Remove space after opening single quote
+        .replace(/\s+'/g, "'") // Remove space before closing single quote
         .trim();
 
     assert.deepEqual(

@@ -1,42 +1,35 @@
 # DevCycle to OpenFeature NodeJS - Variable Transform CodeMod
 
-Create a codemod that updates the `DevCycleUser` object to an OpenFeature `EvaluationContext` object.
+This Codemod changes DevCycle variable calls to openfeature flags:
 
-- Replace the `DevCycleUser` object / types with an `EvaluationContext`
-- Rename the `user_id` field to `targetingKey` in the `EvaluationContext`
-- If the code is using Typescript types where its typed as `DevCycleUser`, update it to use `EvaluationContext` from `@openfeature/server-sdk`.
+- Replace `variableValue()` and `variable()` calls with `get<Type>Value()` and `get<Type>Details()` respectively, where `<Type>` is `Boolean`, `String`, `Number`, or `Object`.
+- move the first parameter (user/context) to the third parameter for each variable call being coverted.
+- all Openfeature calls should be awaited.
 
-### Before
+## Before
 
 ```ts
-export interface DevCycleRequest extends Request {
-  user: DevCycleUser;
-}
+const booleanValue = client.variableValue(user, "boolean-key", false);
+const booleanValue2 = client2.variableValue(user2, "boolean-key-2", false);
 
-const user: DevCycleUser = {
-  user_id: "123",
-  email: "test@test.com",
-  name: "Test User",
-  customData: {
-    custom_field: "custom_value",
-    number_field: 123,
-    boolean_field: true,
-  },
-  privateCustomData: {
-    private_field: "private_value",
-  },
-};
+const booleanVariable = client.variable(user, "boolean-key", false);
 
-const varValue = devCycleClient.variableValue(
-  { user_id: "123" },
-  "test-variable",
-  "default"
-);
+const stringValue = client.variableValue(user, "string-key", "default");
+const stringVariable = client.variable(user, "string-key", "default");
 
-const user2 = { user_id: "1234", email: "test@test.com", name: "Test User" };
-const boolVarValue = devCycleClient.variable(
-  user2,
-  "test-boolean-variable",
+const numberValue = client.variableValue(user, "number-key", 0.0);
+const numberVariable = client.variable(user, "number-key", 0.0);
+
+const objectValue = client.variableValue(user, "object-key", {
+  default: true,
+});
+const objectVariable = client.variable(user, "object-key", {
+  default: true,
+});
+
+const booleanValue3 = client.variableValue(
+  { targetingKey: "1234" },
+  "boolean-key",
   false
 );
 ```
@@ -44,38 +37,44 @@ const boolVarValue = devCycleClient.variable(
 ### After
 
 ```ts
-export interface DevCycleRequest extends Request {
-  user: EvaluationContext;
-}
-
-const user: EvaluationContext = {
-  targetingKey: "123",
-  email: "test@test.com",
-  name: "Test User",
-  customData: {
-    custom_field: "custom_value",
-    number_field: 123,
-    boolean_field: true,
-  },
-  privateCustomData: {
-    private_field: "private_value",
-  },
-};
-
-const varValue = devCycleClient.variableValue(
-  { targetingKey: "123" },
-  "test-variable",
-  "default"
+const booleanValue = await client.getBooleanValue("boolean-key", false, user);
+const booleanValue2 = await client2.getBooleanValue(
+  "boolean-key-2",
+  false,
+  user2
+);
+const booleanVariable = await client.getBooleanDetails(
+  "boolean-key",
+  false,
+  user
 );
 
-const user2 = {
+const stringValue = await client.getStringValue("string-key", "default", user);
+const stringVariable = await client.getStringDetails(
+  "string-key",
+  "default",
+  user
+);
+
+const numberValue = await client.getNumberValue("number-key", 0.0, user);
+const numberVariable = await client.getNumberDetails("number-key", 0.0, user);
+
+const objectValue = await client.getObjectValue(
+  "object-key",
+  {
+    default: true,
+  },
+  user
+);
+const objectVariable = await client.getObjectDetails(
+  "object-key",
+  {
+    default: true,
+  },
+  user
+);
+
+const booleanValue3 = await client.getBooleanValue("boolean-key", false, {
   targetingKey: "1234",
-  email: "test@test.com",
-  name: "Test User",
-};
-const boolVarValue = devCycleClient.variable(
-  user2,
-  "test-boolean-variable",
-  false
-);
+});
 ```
