@@ -1,12 +1,12 @@
 # DevCycle to OpenFeature NodeJS - User Context Transform CodeMod
 
-Create a codemod that updates the `DevCycleUser` object to an OpenFeature `EvaluationContext` object.
+This Codemod updates the `DevCycleUser` object to an OpenFeature `EvaluationContext` object:
 
 - Replace the `DevCycleUser` object / types with an `EvaluationContext`
 - Rename the `user_id` field to `targetingKey` in the `EvaluationContext`
 - If the code is using Typescript types where its typed as `DevCycleUser`, update it to use `EvaluationContext` from `@openfeature/server-sdk`.
 
-### Before
+## Before
 
 ```ts
 export interface DevCycleRequest extends Request {
@@ -41,7 +41,7 @@ const boolVarValue = devCycleClient.variable(
 );
 ```
 
-### After
+## After
 
 ```ts
 export interface DevCycleRequest extends Request {

@@ -7,7 +7,7 @@ This Codemod helps to convert DevCycle NodeJS SDK implementations to the OpenFea
 - Replaces `DevCycleUser` type with `EvaluationContext` from `@openfeature/server-sdk`
 - Add imports for `OpenFeature` from `@openfeature/server-sdk` if the file is using `initializeDevCycle` or `DevCycleClient`
 
-### Before
+## Before
 
 ```ts
 import {
@@ -16,7 +16,7 @@ import {
 } from "@devcycle/nodejs-server-sdk";
 ```
 
-### After
+## After
 
 ```ts
 import { DevCycleProvider } from "@devcycle/nodejs-server-sdk";
