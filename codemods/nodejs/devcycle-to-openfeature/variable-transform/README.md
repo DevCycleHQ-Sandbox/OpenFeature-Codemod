@@ -1,4 +1,4 @@
-# DevCycle to OpenFeature NodeJS - User Context Transform CodeMod
+# DevCycle to OpenFeature NodeJS - Variable Transform CodeMod
 
 Create a codemod that updates the `DevCycleUser` object to an OpenFeature `EvaluationContext` object.
 
