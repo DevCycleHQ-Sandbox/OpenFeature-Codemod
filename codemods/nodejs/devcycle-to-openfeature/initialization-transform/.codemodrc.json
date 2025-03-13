@@ -2,12 +2,16 @@
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
   "name": "devcycle-to-openfeature-nodejs-initialization-transform",
   "description": "DevCycle to OpenFeature Node.js Codemod - Initialization Transform",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "engine": "jscodeshift",
   "private": false,
   "arguments": [],
   "meta": {
     "git": "https://github.com/DevCycleHQ-Sandbox/OpenFeature-Codemod/tree/main/codemods/nodejs/devcycle-to-openfeature/initialization-transform",
-    "tags": ["devcycle", "openfeature", "nodejs"]
+    "tags": [
+      "devcycle",
+      "openfeature",
+      "nodejs"
+    ]
   }
 }

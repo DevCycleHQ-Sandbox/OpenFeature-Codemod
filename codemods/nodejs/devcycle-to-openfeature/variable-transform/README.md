@@ -1,4 +1,4 @@
-# DevCycle to OpenFeature NodeJS - Variable Transform CodeMod
+# DevCycle to OpenFeature Node.js - Variable Transform CodeMod
 
 This Codemod changes DevCycle variable calls to openfeature flags:
 

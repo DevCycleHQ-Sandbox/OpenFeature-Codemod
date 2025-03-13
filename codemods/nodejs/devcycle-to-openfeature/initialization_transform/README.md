@@ -1,6 +1,6 @@
 # DevCycle to OpenFeature Node.js - Initialization Transform CodeMod
 
-This Codemod will transform the initialization of the DevCycle Node.js Server SDK to use OpenFeature Node.js SDK.
+This codemod will transform the initialization of DevCycleClient to use OpenFeature Node.js SDK.
 
 - Calls to `initializeDevCycle()` should be replaced with `new DevCycleProvider()` where the same parameters used.
 - The variable named from the `initializeDevCycle()` call should be renamed to replace `client` with `provider`. For example: `devcycleClient` renamed to `devcycleProvider`.
@@ -8,7 +8,7 @@ This Codemod will transform the initialization of the DevCycle Node.js Server SD
 - C new `openFeatureClient` should be created from `OpenFeature.getClient()`
 - Usages of the variabled named from the `initializeDevCycle()` call should be updated to use the `openFeatureClient` instead.
 
-## Before
+### Before
 
 ```ts
 let devcycleClient: DevCycleClient;
@@ -28,7 +28,7 @@ function getDevCycleClient() {
 export { initializeDevCycleClient, getDevCycleClient };
 ```
 
-## After
+### After
 
 ```ts
 let openFeatureClient: Client;
