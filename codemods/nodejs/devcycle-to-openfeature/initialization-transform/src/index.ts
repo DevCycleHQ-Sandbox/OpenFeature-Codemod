@@ -19,196 +19,181 @@ export default function transform(
       path.node.typeName = j.identifier("Client");
     });
 
-  // Find all calls to initializeDevCycle, including chained calls
-  const initializeDevCycleCalls = root.find(j.CallExpression, {
-    callee: {
-      name: "initializeDevCycle",
-    },
-  });
-
-  // Find chained calls
-  const chainedCalls = root.find(j.CallExpression, {
-    callee: {
-      type: "MemberExpression",
-      object: {
-        type: "CallExpression",
-        callee: {
-          name: "initializeDevCycle",
-        },
-      },
-    },
-  });
-
-  // Find assignments using initializeDevCycle
-  const assignmentCalls = root.find(j.AssignmentExpression, {
-    right: {
-      type: "AwaitExpression",
-      argument: {
-        type: "CallExpression",
-        callee: {
-          type: "MemberExpression",
-          object: {
-            type: "CallExpression",
-            callee: {
-              name: "initializeDevCycle",
+  // Find all assignments using initializeDevCycle
+  root
+    .find(j.AssignmentExpression, {
+      right: {
+        type: "AwaitExpression",
+        argument: {
+          type: "CallExpression",
+          callee: {
+            type: "MemberExpression",
+            object: {
+              type: "CallExpression",
+              callee: {
+                name: "initializeDevCycle",
+              },
             },
           },
         },
       },
-    },
-  });
+    })
+    .forEach((path) => {
+      if (!j.Identifier.check(path.node.left)) return;
+      if (!j.AwaitExpression.check(path.node.right)) return;
 
-  // Find variable declarations using initializeDevCycle
-  const variableDeclarations = root.find(j.VariableDeclarator, {
-    init: {
-      type: "AwaitExpression",
-      argument: {
-        type: "CallExpression",
-        callee: {
-          type: "MemberExpression",
-          object: {
-            type: "CallExpression",
-            callee: {
-              name: "initializeDevCycle",
-            },
-          },
-        },
-      },
-    },
-  });
+      const variableName = path.node.left.name;
+      const providerName = variableName
+        .replace(/client/i, "Provider")
+        .replace(/^([A-Z])/g, (letter: string) => letter.toLowerCase());
 
-  // Combine all sets of calls
-  const allCalls = [
-    ...initializeDevCycleCalls.paths(),
-    ...chainedCalls.paths(),
-    ...assignmentCalls.paths(),
-    ...variableDeclarations.paths(),
-  ];
-
-  allCalls.forEach((path) => {
-    const parent = path.parentPath;
-    if (!parent) return;
-
-    let variableName: string | undefined;
-    if (j.VariableDeclarator.check(path.node)) {
-      if (j.Identifier.check(path.node.id)) {
-        variableName = path.node.id.name;
-      }
-    } else if (j.AssignmentExpression.check(path.node)) {
-      if (j.Identifier.check(path.node.left)) {
-        variableName = path.node.left.name;
-      }
-    } else {
-      return;
-    }
-
-    if (!variableName) return;
-
-    const providerName = variableName
-      .replace(/client/i, "provider")
-      .replace(/^([A-Z])/, (_, letter) => letter.toLowerCase())
-      .replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
-    const openFeatureClientName = "openFeatureClient";
-
-    let args;
-    if (j.VariableDeclarator.check(path.node)) {
-      const init = path.node.init;
+      const callExpr = path.node.right.argument;
       if (
-        j.AwaitExpression.check(init) &&
-        j.CallExpression.check(init.argument) &&
-        j.MemberExpression.check(init.argument.callee)
-      ) {
-        // Handle chained calls like .onClientInitialized()
-        const callExpr = init.argument.callee.object;
-        if (j.CallExpression.check(callExpr)) {
-          args = callExpr.arguments;
-        }
-      } else if (
-        j.AwaitExpression.check(init) &&
-        j.CallExpression.check(init.argument)
-      ) {
-        args = init.argument.arguments;
-      }
-    } else if (j.AssignmentExpression.check(path.node)) {
-      const right = path.node.right;
-      if (
-        j.AwaitExpression.check(right) &&
-        j.CallExpression.check(right.argument) &&
-        j.MemberExpression.check(right.argument.callee)
-      ) {
-        // Handle chained calls like .onClientInitialized()
-        const callExpr = right.argument.callee.object;
-        if (j.CallExpression.check(callExpr)) {
-          args = callExpr.arguments;
-        }
-      } else if (
-        j.AwaitExpression.check(right) &&
-        j.CallExpression.check(right.argument)
-      ) {
-        args = right.argument.arguments;
-      }
-    }
-
-    const providerInit = j.newExpression(
-      j.identifier("DevCycleProvider"),
-      args || []
-    );
-
-    const openFeatureSetup = j.awaitExpression(
-      j.callExpression(
-        j.memberExpression(
-          j.identifier("OpenFeature"),
-          j.identifier("setProviderAndWait")
-        ),
-        [j.identifier(providerName)]
+        !j.CallExpression.check(callExpr) ||
+        !j.MemberExpression.check(callExpr.callee)
       )
-    );
+        return;
 
-    const openFeatureClientInit = j.variableDeclaration("const", [
-      j.variableDeclarator(
-        j.identifier(openFeatureClientName),
-        j.callExpression(
-          j.memberExpression(
-            j.identifier("OpenFeature"),
-            j.identifier("getClient")
-          ),
-          []
-        )
-      ),
-    ]);
+      const initCall = callExpr.callee.object;
+      if (!j.CallExpression.check(initCall)) return;
 
-    if (j.VariableDeclarator.check(path.node)) {
-      path.node.init = providerInit;
-      if (j.Identifier.check(path.node.id)) {
-        path.node.id = j.identifier(providerName);
-      }
-    } else if (j.AssignmentExpression.check(path.node)) {
-      const declaration = j.variableDeclaration("const", [
-        j.variableDeclarator(j.identifier(providerName), providerInit),
+      const args = initCall.arguments;
+
+      // Create the new provider initialization
+      const providerInit = j.variableDeclaration("const", [
+        j.variableDeclarator(
+          j.identifier(providerName),
+          j.newExpression(j.identifier("DevCycleProvider"), args)
+        ),
       ]);
-      parent.replace(declaration);
-    }
 
-    const statements = [
-      j.expressionStatement(openFeatureSetup),
-      openFeatureClientInit,
-    ];
+      // Create OpenFeature setup
+      const openFeatureSetup = j.expressionStatement(
+        j.awaitExpression(
+          j.callExpression(
+            j.memberExpression(
+              j.identifier("OpenFeature"),
+              j.identifier("setProviderAndWait")
+            ),
+            [j.identifier(providerName)]
+          )
+        )
+      );
 
-    const block = parent.parentPath;
-    if (j.BlockStatement.check(block.node)) {
-      const index = block.node.body.indexOf(parent.node);
-      block.node.body.splice(index + 1, 0, ...statements);
-    }
+      // Create OpenFeature client initialization
+      const clientInit = j.variableDeclaration("const", [
+        j.variableDeclarator(
+          j.identifier("openFeatureClient"),
+          j.callExpression(
+            j.memberExpression(
+              j.identifier("OpenFeature"),
+              j.identifier("getClient")
+            ),
+            []
+          )
+        ),
+      ]);
 
-    root
-      .find(j.Identifier, {
-        name: variableName,
-      })
-      .forEach((usage) => {
-        if (usage.parentPath.node === path.node) return;
-        usage.node.name = openFeatureClientName;
-      });
-  });
+      // Replace the original assignment with the new statements
+      if (!path.parent) return;
+      path.parent.replace(providerInit, openFeatureSetup, clientInit);
+
+      // Update all references to the original client variable
+      root
+        .find(j.Identifier, {
+          name: variableName,
+        })
+        .forEach((idPath) => {
+          if (idPath.parentPath.node === path.node) return;
+          idPath.node.name = "openFeatureClient";
+        });
+    });
+
+  // Find direct initializeDevCycle calls
+  root
+    .find(j.VariableDeclaration, {
+      declarations: [
+        {
+          init: {
+            type: "CallExpression",
+            callee: {
+              name: "initializeDevCycle",
+            },
+          },
+        },
+      ],
+    })
+    .forEach((path) => {
+      const declaration = path.node.declarations[0];
+      if (!declaration || !j.VariableDeclarator.check(declaration)) return;
+      if (!j.Identifier.check(declaration.id)) return;
+
+      const variableName = declaration.id.name;
+      const providerName = variableName
+        .replace(/client/i, "Provider")
+        .replace(/^([A-Z])/g, (letter: string) => letter.toLowerCase());
+
+      const init = declaration.init;
+      if (!init || !j.CallExpression.check(init)) return;
+
+      const args = init.arguments;
+
+      // Create the new provider initialization
+      const providerInit = j.variableDeclaration("const", [
+        j.variableDeclarator(
+          j.identifier(providerName),
+          j.newExpression(j.identifier("DevCycleProvider"), args)
+        ),
+      ]);
+
+      // Create OpenFeature setup
+      const openFeatureSetup = j.expressionStatement(
+        j.awaitExpression(
+          j.callExpression(
+            j.memberExpression(
+              j.identifier("OpenFeature"),
+              j.identifier("setProviderAndWait")
+            ),
+            [j.identifier(providerName)]
+          )
+        )
+      );
+
+      // Create OpenFeature client initialization
+      const clientInit = j.variableDeclaration("const", [
+        j.variableDeclarator(
+          j.identifier(variableName),
+          j.callExpression(
+            j.memberExpression(
+              j.identifier("OpenFeature"),
+              j.identifier("getClient")
+            ),
+            []
+          )
+        ),
+      ]);
+
+      // Replace the original declaration and add the new statements
+      const statements = [providerInit, openFeatureSetup, clientInit];
+      path.replace(...statements);
+
+      // Remove any subsequent onClientInitialized calls
+      root
+        .find(j.ExpressionStatement, {
+          expression: {
+            type: "AwaitExpression",
+            argument: {
+              type: "CallExpression",
+              callee: {
+                type: "MemberExpression",
+                object: { name: variableName },
+                property: { name: "onClientInitialized" },
+              },
+            },
+          },
+        })
+        .remove();
+    });
 
   return root.toSource();
 }

@@ -1,12 +1,12 @@
 let openFeatureClient: Client;
 
 async function initializeDevCycleClient() {
-  const Devcycleprovider = new DevCycleProvider(DEVCYCLE_SERVER_SDK_KEY, {
+  const devcycleProvider = new DevCycleProvider(DEVCYCLE_SERVER_SDK_KEY, {
     logLevel: "info",
     eventFlushIntervalMS: 1000,
   });
 
-  await OpenFeature.setProviderAndWait(Devcycleprovider);
+  await OpenFeature.setProviderAndWait(devcycleProvider);
   const openFeatureClient = OpenFeature.getClient();
   return openFeatureClient;
 }

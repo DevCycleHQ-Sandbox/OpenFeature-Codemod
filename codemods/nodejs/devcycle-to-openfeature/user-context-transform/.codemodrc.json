@@ -2,12 +2,12 @@
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
   "name": "devcycle-to-openfeature-nodejs-user-context-transform",
   "description": "DevCycle to OpenFeature Node.js Codemod - User Context Transform",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "engine": "jscodeshift",
   "private": false,
   "arguments": [],
   "meta": {
-    "git": "https://github.com/DevCycleHQ-Sandbox/OpenFeature-Codemod",
+    "git": "https://github.com/DevCycleHQ-Sandbox/OpenFeature-Codemod/tree/main/codemods/nodejs/devcycle-to-openfeature/user-context-transform",
     "tags": ["devcycle", "openfeature", "nodejs"]
   }
 }
