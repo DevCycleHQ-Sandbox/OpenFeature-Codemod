@@ -4,7 +4,7 @@ This repository is a collection of Codemods to help convert codebases from an ex
 
 - [DevCycle to OpenFeature Node.js Codemod](https://codemod.com/registry/devcycle-to-openfeature-nodejs-workflow)
    - Convert your Node.js application using [DevCycle's Node.js Server SDK](https://docs.devcycle.com/sdk/server-side-sdks/node/) to using [OpenFeature's Node.js SDK](https://openfeature.dev/docs/reference/technologies/server/javascript/) with [DevCycle's OpenFeature Provider](https://docs.devcycle.com/sdk/server-side-sdks/node/node-openfeature)
-   - Run Codemod using: `codemod devcycle-to-openfeature-nodejs-workflow`
+   - Run Codemod using: `npx codemod@latest devcycle-to-openfeature-nodejs-workflow`
 - LaunchDarkly to OpenFeature Node.js Codemod (Coming Soon)
    - Convert your Node.js application using [LaunchDarkly Node.js SDK](https://launchdarkly.com/docs/sdk/server-side/node-js) to using [OpenFeature's Node.js SDK](https://openfeature.dev/docs/reference/technologies/server/javascript/) with [LaunchDarkly's OpenFeature Provider](https://launchdarkly.com/docs/sdk/openfeature/node-js)
 
@@ -12,15 +12,8 @@ This repository is a collection of Codemods to help convert codebases from an ex
 
 ## Run Codemod
 
-First install the Codemod NPM package: 
-
 ```bash
-npm i -g codemod
-```
-
-Run Codemod:
-```bash
-codemod devcycle-to-openfeature-nodejs-workflow
+npx codemod@latest devcycle-to-openfeature-nodejs-workflow
 ```
 
 ## Testing The Codemods
